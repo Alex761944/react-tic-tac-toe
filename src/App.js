@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+function upperCaseFirstCharacter(string) {
+  return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+}
+
 function Square({ value, onSquareClick, isWinning }) {
   return (
     <button
@@ -99,7 +103,9 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <button onClick={handleClick}>{sorting}</button>
+        <button onClick={handleClick}>
+          {upperCaseFirstCharacter(sorting)}
+        </button>
         <ul>
           {sorting === "descending" ? moves.toReversed() : moves}
           <li>
