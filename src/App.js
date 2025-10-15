@@ -24,9 +24,13 @@ function Board({ xIsNext, squares, onPlay }) {
   }
 
   const { winner, line } = calculateWinner(squares);
+  const isDraw = !winner && squares.every(Boolean);
+
   const status = winner
-    ? "Winner: " + winner
-    : "Next player: " + (xIsNext ? "X" : "O");
+    ? `Winner: ${winner}`
+    : isDraw
+    ? "Remis"
+    : `Next player: ${xIsNext ? "X" : "O"}`;
 
   return (
     <>
@@ -36,7 +40,7 @@ function Board({ xIsNext, squares, onPlay }) {
         <div className="board-row" key={row}>
           {[0, 1, 2].map((col) => {
             const index = row * 3 + col;
-            const isWinning = Array.isArray(line) && line.includes(index); // ← NEU
+            const isWinning = Array.isArray(line) && line.includes(index);
             return (
               <Square
                 value={squares[index]}
@@ -57,6 +61,9 @@ export default function Game() {
   const [sorting, setSorting] = useState("descending");
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
+
+  const { winner } = calculateWinner(currentSquares);
+  const isDraw = !winner && currentSquares.every(Boolean);
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -95,7 +102,9 @@ export default function Game() {
         <button onClick={handleClick}>{sorting}</button>
         <ul>
           {sorting === "descending" ? moves.toReversed() : moves}
-          <li>You are at move #{currentMove + 1}</li>
+          <li>
+            {isDraw ? "Out of moves" : `You are at move #${currentMove + 1}`}
+          </li>
         </ul>
       </div>
     </div>
