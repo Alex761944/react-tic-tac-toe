@@ -15,7 +15,7 @@ function Square({ value, onSquareClick, isWinning }) {
   );
 }
 
-function Board({ xIsNext, squares, onPlay }) {
+function Board({ xIsNext, isDraw, squares, onPlay }) {
   function handleClick(i) {
     const { winner } = calculateWinner(squares);
 
@@ -28,13 +28,15 @@ function Board({ xIsNext, squares, onPlay }) {
   }
 
   const { winner, line } = calculateWinner(squares);
-  const isDraw = !winner && squares.every(Boolean);
 
-  const status = winner
-    ? `Winner: ${winner}`
-    : isDraw
-    ? "Remis"
-    : `Next player: ${xIsNext ? "X" : "O"}`;
+  let status;
+  if (winner) {
+    status = `Winner: ${winner}`;
+  } else if (isDraw) {
+    status = "Remis";
+  } else {
+    status = `Next player: ${xIsNext ? "X" : "O"}`;
+  }
 
   return (
     <>
@@ -47,6 +49,7 @@ function Board({ xIsNext, squares, onPlay }) {
             const isWinning = Array.isArray(line) && line.includes(index);
             return (
               <Square
+                key={index}
                 value={squares[index]}
                 onSquareClick={() => handleClick(index)}
                 isWinning={isWinning}
@@ -65,9 +68,12 @@ export default function Game() {
   const [sorting, setSorting] = useState("descending");
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
-
   const { winner } = calculateWinner(currentSquares);
-  const isDraw = !winner && currentSquares.every(Boolean);
+  const isDraw =
+    !winner &&
+    currentSquares.every((square) => {
+      return square !== null;
+    });
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -100,7 +106,12 @@ export default function Game() {
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board
+          xIsNext={xIsNext}
+          isDraw={isDraw}
+          squares={currentSquares}
+          onPlay={handlePlay}
+        />
       </div>
       <div className="game-info">
         <button onClick={handleClick}>
